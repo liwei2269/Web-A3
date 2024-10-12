@@ -4,6 +4,8 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors());
+app.use(express.json()); 
+
 
 const connection = mysql.createConnection({
   host: '127.0.0.1',
@@ -23,20 +25,6 @@ app.get('/fundraisers', (req, res) => {
   });
 });
 
-app.get('/fundraisers/:id', (req, res) => {
-  const fundraiserId = req.params.id;
-  const sql = 'SELECT * FROM fundraisers WHERE fundraiser_id = ?';
-  connection.query(sql, [fundraiserId], (error, result) => {
-    if (error) {
-      console.error('Query error:', error);
-      return res.status(500).json({ message: 'Error retrieving data' });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ message: 'Fundraiser not found' });
-    }
-    res.json(result[0]);
-  });
-});
 
 app.get('/search', (req, res) => {
   const { organizer, city, category } = req.query;

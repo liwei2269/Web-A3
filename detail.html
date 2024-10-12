@@ -75,6 +75,41 @@
       .btn:hover {
         background-color: #388e3c;
       }
+
+      .donations-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .donations-container h3 {
+        margin-bottom: 10px;
+        color: var(--primary-color);
+      }
+
+      .donation-list {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .donation-list li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        font-size: 16px;
+        color: var(--text-color);
+      }
+
+      .donation-list li:last-child {
+        border-bottom: none;
+      }
+
+      .donation-list li span {
+        display: block;
+        font-size: 14px;
+        color: var(--text-secondary-color);
+      }
     </style>
   </head>
   <body>
@@ -114,24 +149,47 @@
             return response.json();
           })
           .then((data) => {
-            document.getElementById("fundraiserTitle").textContent = data.title;
+            // 显示募资项目信息
+            document.getElementById("fundraiserTitle").textContent =
+              data.fundraiser.title;
             document.getElementById(
               "fundraiserOrganizer"
-            ).innerHTML = `<strong>Organizer:</strong> ${data.organizer}`;
+            ).innerHTML = `<strong>Organizer:</strong> ${data.fundraiser.organizer}`;
             document.getElementById(
               "fundraiserCity"
-            ).innerHTML = `<strong>City:</strong> ${data.city}`;
+            ).innerHTML = `<strong>City:</strong> ${data.fundraiser.city}`;
             document.getElementById(
               "fundraiserTarget"
-            ).innerHTML = `<strong>Target Funding:</strong> $${data.target_funding}`;
+            ).innerHTML = `<strong>Target Funding:</strong> $${data.fundraiser.target_funding}`;
             document.getElementById(
               "fundraiserCurrent"
-            ).innerHTML = `<strong>Current Funding:</strong> $${data.current_funding}`;
+            ).innerHTML = `<strong>Current Funding:</strong> $${data.fundraiser.current_funding}`;
+
+            // 显示捐赠列表
+            const donationList = document.createElement("ul");
+            donationList.className = "donation-list";
+            data.donations.forEach((donation) => {
+              const listItem = document.createElement("li");
+              listItem.innerHTML = `<strong>${
+                donation.giver
+              }</strong> donated $${donation.amount} <span>on ${new Date(
+                donation.date
+              ).toLocaleDateString()}</span>`;
+              donationList.appendChild(listItem);
+            });
+
+            const donationsContainer = document.createElement("div");
+            donationsContainer.className = "donations-container";
+            donationsContainer.innerHTML = "<h3>Donations:</h3>";
+            donationsContainer.appendChild(donationList);
+            document
+              .querySelector(".container")
+              .appendChild(donationsContainer);
 
             document
               .getElementById("donateButton")
               .addEventListener("click", function () {
-                alert("This feature is under development.");
+                window.location.href = `donation.html?fundraiser_id=${fundraiserId}`;
               });
           })
           .catch((err) => {
